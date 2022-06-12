@@ -1,15 +1,40 @@
 import React, {useState} from 'react';
 
+
+const StatisticLine = (props) => {
+
+  return (
+    <>
+      <tr>
+        <td>{props.text}</td> 
+        <td>{props.value}</td>
+      </tr>
+    </>
+  )
+}
+
 const Statistics = (props) => {
 
   return (
     <>
     <h1>Statistics</h1>
-    <p>good {props.goodCount}</p>
-    <p>neutral {props.neutralCount}</p>
-    <p>bad {props.badCount}</p>
-    <p>average {props.average}</p>
-    <p>positive {props.positive}</p>
+    <table>
+      <StatisticLine text = "good" value = {props.goodCount}/>
+      <StatisticLine text = "neutral" value = {props.neutralCount}/>
+      <StatisticLine text = "bad" value = {props.badCount}/>
+      <StatisticLine text = "average" value = {props.average}/>
+      <StatisticLine text = "positive" value = {props.positive}/>
+    </table>
+    </>
+  );
+}
+
+
+const Button = (props) => {
+
+  return (
+    <>
+    <button onClick={props.handleClick}>{props.text}</button>
     </>
   )
 }
@@ -27,9 +52,9 @@ export default function App() {
   return (
     <>
     <h1>Give Feedback</h1>
-    <button onClick={() => {setGoodCount(goodCount + 1)}}>good</button>
-    <button onClick={() => {setNeutralCount(neutralCount + 1)}}>neutral</button>
-    <button onClick={() => {setBadCount(badCount + 1)}}>bad</button>
+    <Button handleClick={() => {setGoodCount(goodCount + 1)}} text = "good"></Button>
+    <Button handleClick={() => {setNeutralCount(neutralCount + 1)}} text = "neutral"></Button>
+    <Button handleClick={() => {setBadCount(badCount + 1)}} text = "bad"></Button>
 
     <br/>
 
