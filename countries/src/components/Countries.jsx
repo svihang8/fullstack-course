@@ -2,16 +2,24 @@ import React from 'react'
 import { useEffect } from 'react';
 import { useState } from 'react'
 import axios from 'axios'
+import Country from './Country';
+
 export default function Countries({ filter }) {
   const [countries, setCountries] = useState([]);
   const [visibility, setVisibility] = useState(-1);
+  const [show, setShow] = useState([]); 
+  
+  const handleShow = (country) => {
+    let newShow = [...show];
+    newShow.push(country);
+    setShow(newShow)
+  }
 
   useEffect(() => {
     axios.get('https://restcountries.com/v3.1/all')
          .then((res) => {
             let countries = [...res.data];
-            //console.log(countries[0].name.common);
-            
+
             countries = countries.filter((country) => {
               let countryName = country.name.common;
               if(countryName.toLowerCase().includes(filter.toLowerCase())) {
@@ -30,6 +38,7 @@ export default function Countries({ filter }) {
               visibilityIndex = 0;
             }
             console.log(visibilityIndex);
+            setShow([]);
             setVisibility(visibilityIndex);
             setCountries(countries);
          })
@@ -46,7 +55,16 @@ export default function Countries({ filter }) {
         visibility === 1 &&
         countries.map((country) => {
           return (
-            <p key = {country.name.common}>{country.name.common}</p>
+            <div>
+              <p key = {country.name.common}>{country.name.common}</p>
+              <button onClick={() => {handleShow(country.name.common)}}>Show</button>
+              {
+                show.includes(country.name.common) &&
+                <>
+                <Country country = {country}/>
+                </>
+              }
+            </div>
           )
         })
       }
@@ -54,6 +72,10 @@ export default function Countries({ filter }) {
       {
         visibility === 2 &&
         countries.map((country) => {
+          return (
+            <Country country = {country}/>
+          )
+          /*
           console.log(country);
           let listofLanguages = [];
           for(const language in country.languages) {
@@ -80,6 +102,7 @@ export default function Countries({ filter }) {
               <img src = {country.flags.png} alt = {country.flag || 'Not available'} style={{border : '1px solid',}}/>
             </div>
           )
+          */
         })        
       }
     </>
