@@ -34,25 +34,25 @@ const App = () => {
     e.preventDefault();
 
     let newPersons = [...persons];
-    let name = newName;
-    let number = newNumber;
-    let dup = false;
+    const newPerson = {
+      name: newName,
+      number: newNumber,  
+    }
 
-    for(let person of newPersons) {
-      if(name === person.name) {
-        dup = true;
-        break;
+    for(const person in newPersons) {
+      if(newPerson.name === person.name) {
+        console.log('Person with same name already exists');
+        return;
       }
-    }
+    };
 
-    if(dup) {
-      alert(`${name} already exists.`);
-    } else {
-      newPersons.push({name : name, number : number,});
-    }
-
-    setPersons(newPersons);
-    setNewName('');
+    axios.post('http://localhost:3001/persons', newPerson)
+         .then((res) => {
+          console.log(res.data);
+          newPersons.push(res.data);
+          setPersons(newPersons);
+          setNewName('');
+         });
   }
 
   return (
