@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Directory from './components/Directory'
 import Form from './components/Form'
 import SearchBar from './components/SearchBar'
-import {getPersons, postPersons, deletePerson} from './service/persons';
+import {getPersons, postPersons, deletePerson, updatePerson} from './service/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -39,10 +39,15 @@ const App = () => {
       number: newNumber,  
     }
 
-    for(const person of newPersons) {
-      if(newPerson.name === person.name) {
-        console.log('person', person);
+    for(const personObj of newPersons) {
+      if(newPerson.name === personObj.name) {
+        console.log('person', personObj);
         console.log('Person with same name already exists');
+        if(window.confirm(`${personObj.name} is already in the phonebook ? Do you want to update the phone number ?`)) {
+          console.log('newPerson', newPerson);
+          updatePerson(newPerson, personObj.id)
+          .then(handleUpdate(personObj))
+        }
         return;
       }
     }
@@ -53,7 +58,20 @@ const App = () => {
           newPersons.push(res.data);
           setPersons(newPersons);
           setNewName('');
+          setNewNumber('');
          });
+
+    function handleUpdate(personObj) {
+      return (res) => {
+        console.log('res', res.data);
+        newPersons = newPersons.map((person) => {
+          return person.id === personObj.id ? res.data : person;
+        });
+        setPersons(newPersons);
+        setNewName('');
+        setNewNumber('');
+      };
+    }
   }
 
   const handleDelete = (id) => {
