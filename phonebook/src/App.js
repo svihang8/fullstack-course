@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Directory from './components/Directory'
 import Form from './components/Form'
 import SearchBar from './components/SearchBar'
-import axios from 'axios'
+import {getPersons, postPersons, deletePerson} from './service/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,12 +11,12 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('');
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
+    getPersons()
     .then((res) => {
       console.log('phonebook', res.data);
       setPersons(res.data);
     });
-  }, []);
+  }, [setPersons]);
 
   const handleName = (e) => {
     setNewName(e.target.value);
@@ -39,20 +39,44 @@ const App = () => {
       number: newNumber,  
     }
 
-    for(const person in newPersons) {
+    for(const person of newPersons) {
       if(newPerson.name === person.name) {
+        console.log('person', person);
         console.log('Person with same name already exists');
         return;
       }
-    };
-
-    axios.post('http://localhost:3001/persons', newPerson)
-         .then((res) => {
+    }
+    
+    postPersons(newPerson)
+    .then((res) => {
           console.log(res.data);
           newPersons.push(res.data);
           setPersons(newPersons);
           setNewName('');
          });
+  }
+
+  const handleDelete = (id) => {
+    console.log('id', id);
+
+    let newPersons = [...persons];
+    let deletePersonObj;
+
+    for(const person of newPersons) {
+      if(person.id === id) {
+        deletePersonObj = person;
+      }
+    }
+
+    console.log('deletePerson', deletePersonObj);
+    if(window.confirm(`Delete ${deletePersonObj.name} ?`)) {
+      deletePerson(id)
+      .then((res) => {
+        console.log('res', res);
+        newPersons = newPersons.filter((person) => {return person.id !== id});
+        setPersons(newPersons);
+      })
+    }
   }
 
   return (
@@ -67,7 +91,7 @@ const App = () => {
             handleSubmit = {handleSubmit}/>
 
       <h2>Numbers</h2>
-      <Directory persons = {persons} newFilter = {newFilter}/>
+      <Directory persons = {persons} newFilter = {newFilter} handleDelete = {handleDelete}/>
     
     </div>
   )
